@@ -6,8 +6,10 @@ HEADER="Accept: application/vnd.github.v3.star+json"
 ORG_INFO="{name:.name,full_name:.full_name,owner:{login:.owner.login,html_url:.owner.html_url},html_url:.html_url,description:.description,created_at:.created_at,updated_at:.updated_at,pushed_at:.pushed_at,git_url:.git_url,ssh_url:.ssh_url,homepage:.homepage,stargazers_count:.stargazers_count,watchers_count:.watchers_count,forks_count:.forks_count,open_issues:.open_issues,default_branch:.default_branch,network_count:.network_count,subscribers_count:.subscribers_count}"
 USER_INFO="{login:.login,id:.id,company:.company,location:.location,email:.email,name:.name,avatar_url:.avatar_url,gravatar_id:.gravatar_id,url:.url,type:.type,blog:.blog,hireable:.hireable,bio:.bio,created_at:.created_at,updated_at:.updated_at}"
 
-if [ -z "$USER" -o -z "$REPO" ]; then
-  echo '$1 : Github username,  $2: Github repository name (only public repo)'
+if [  -z "$USER" -o -z "$REPO" -o -z "$AUTH" ]; then
+  echo '[error] missing $1 : Github username'
+  echo '[error] missing $2: Github repository name (only public repo)'
+  echo '[error] missing $3 : Your github auth(username:password)'
   exit 1
 fi
 
