@@ -13,7 +13,7 @@ fi
 
 FILENAME=star_${USER}_${REPO}
 rm -rf ${FILENAME}_*
-curl -s -u ${AUTH} https://api.github.com/repos/$USER/$REPO | jq $ORG_INFO > ${FILENAME}_repo.text
+curl -s -u ${AUTH} https://api.github.com/repos/$USER/$REPO | jq $ORG_INFO > ./temp/${FILENAME}_repo.json
 
 stargazers_url=`curl -s -u ${AUTH}  https://api.github.com/repos/$USER/$REPO | jq .stargazers_url | sed 's/\"//g'`
 
@@ -25,12 +25,16 @@ count=0
 while [ $i -le ${page_cnt} ]; do
     usernames=`curl -s -u ${AUTH} "${stargazers_url}?page=${i}&per_page=${per_page}" -H "${HEADER}" | jq '.[].user.login' | sed 's/\"//g'`
     echo $usernames
-    for username in ${usernames[@]}; do
-        curl -s -u "${AUTH}" "https://api.github.com/users/${username}" -H "${HEADER}" | jq $USER_INFO >> ${FILENAME}_users.text
+    for username in ${usernames[@]};
+    do
+    {
+        curl -s -u "${AUTH}" "https://api.github.com/users/${username}" -H "${HEADER}" | jq $USER_INFO >> ./temp/${FILENAME}_users.json
+    }
     done
     echo "Load users ..."
 
     i=$(($i + 1))
 done
 
-jq --slurpfile users ${FILENAME}_users.text '.users += $users' {FILENAME}_repo.text > {FILENAME}.json
+jq --slurpfile users ${FILENAME}_users.json '.users += $users' ./temp/${FILENAME}_repo.json > ${FILENAME}.json
+jq -r '.users | (map(keys_unsorted) | .[0]) as $cols | map(. as $row | $cols | map($row[.])) as $rows | $cols, $rows[] | @csv' ${FILENAME}.json > ${FILENAME}.csv

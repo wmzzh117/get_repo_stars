@@ -1,0 +1,17 @@
+# Mac OS
+.DS_Store
+
+# IDE
+.idea
+.project
+.vscode
+
+# npm
+node_modules
+npm-debug.log
+yarn-error.log
+
+# folder
+dist
+tmp
+temp
